@@ -1,0 +1,14 @@
+{
+  "name": "redriverlab-origin-failover",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Cloudflare Worker that proxies to the primary origin and falls back to the RedRiverLab static Pages site.",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "check": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
