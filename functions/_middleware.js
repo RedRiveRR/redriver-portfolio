@@ -1,4 +1,4 @@
-const PRIMARY_SITE = "https://redriverlab.com";
+const PRIMARY_SITE = "https://redriverlab.me";
 const PRIMARY_HOST = new URL(PRIMARY_SITE).hostname.toLowerCase();
 const HEALTHCHECK_TIMEOUT_MS = 2000;
 
@@ -18,7 +18,7 @@ export async function onRequest(context) {
     return context.next();
   }
 
-  // Never redirect redriverlab.com to itself; that would create a redirect loop
+  // Never redirect redriverlab.me to itself; that would create a redirect loop
   // if this fallback is later attached to the primary hostname.
   if (requestUrl.hostname.toLowerCase() === PRIMARY_HOST) {
     return context.next();
