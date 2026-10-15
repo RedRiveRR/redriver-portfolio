@@ -97,9 +97,9 @@ export default {
           fetchOptions.cf = {
             cacheTtl: 0,
             cacheEverything: false,
-            // The apex DNS record currently points to Pages. Resolve the apex
-            // request against the proxied www A record to reach the actual server,
-            // while preserving https://redriverlab.me as the visitor/origin Host.
+            // Use the proxied www A record as the primary-origin address for both
+            // the apex and www routes. resolveOverride changes DNS resolution only;
+            // the original request hostname/Host header is preserved.
             resolveOverride: "www.redriverlab.me"
           };
         }
