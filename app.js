@@ -44,7 +44,11 @@
   function renderRepos(repos) {
     const visible = repos
       .filter((repo) => !repo.private && !repo.fork && !repo.archived)
-      .sort((a, b) => new Date(b.pushed_at || b.updated_at || 0) - new Date(a.pushed_at || a.updated_at || 0))
+      .sort((a, b) => {
+        const starDifference = Number(b.stargazers_count || 0) - Number(a.stargazers_count || 0);
+        if (starDifference !== 0) return starDifference;
+        return new Date(b.pushed_at || b.updated_at || 0) - new Date(a.pushed_at || a.updated_at || 0);
+      })
       .slice(0, 6);
 
     if (count) count.textContent = visible.length
@@ -66,7 +70,7 @@
           <a class="project-title" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(repo.name)} ↗</a>
           <p class="project-description">${esc(description)}</p>
         </div>
-        <span class="project-language">${esc(language)}</span>
+        <span class="project-language">${esc(language)} · ★ ${Number(repo.stargazers_count || 0)}</span>
       </article>`;
     }).join("");
   }
