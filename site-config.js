@@ -5,5 +5,5 @@ window.SITE_CONFIG = {
   logoPath: "/assets/rr-wordmark-horizontal-web.png",
   serverStatus: "offline", // Change to "online" when the primary host is back.
   serverStatusTitle: "Ana sunucu çevrimdışı.",
-  serverStatusMessage: "Ana sunucu şu anda erişilemiyor. Bu yedek sayfa Cloudflare üzerinde bağımsız olarak yayınlanır."
+  serverStatusMessage: "Ana sunucu şu anda erişilemiyor. Bu geçici yedek sayfa, ana site yeniden devreye alınana kadar Cloudflare üzerinde bağımsız olarak yayında kalır."
 };
