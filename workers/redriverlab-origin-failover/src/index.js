@@ -70,57 +70,22 @@ export default {
     const timeout = setTimeout(() => controller.abort("Primary origin timed out"), 4000);
 
     try {
-      const isHealthyOriginTest = requestUrl.pathname === "/_origin-health-test";
-      if (isHealthyOriginTest && request.method !== "GET" && request.method !== "HEAD") {
-        return new Response("This test endpoint supports only GET and HEAD.", {
-          status: 405,
-          headers: { "Allow": "GET, HEAD", "Cache-Control": "no-store, max-age=0" }
-        });
+      const fetchOptions = { signal: controller.signal };
+      if (request.method === "GET" || request.method === "HEAD") {
+        fetchOptions.cf = {
+          cacheTtl: 0,
+          cacheEverything: false,
+          // Use the proxied www A record as the primary-origin address for both
+          // the apex and www routes. resolveOverride changes DNS resolution only;
+          // the original request hostname/Host header is preserved.
+          resolveOverride: "www.redriverlab.me"
+        };
       }
-
-      let originResponse;
-      if (isHealthyOriginTest) {
-        // Temporary diagnostic endpoint: use a real, unrelated HTTPS origin
-        // so this can test a successful upstream response without changing DNS.
-        const testRequest = new Request("https://example.com/", {
-          method: request.method,
-          headers: { "accept": request.headers.get("Accept") || "text/html" },
-          redirect: "manual"
-        });
-        originResponse = await fetch(testRequest, {
-          signal: controller.signal,
-          cf: { cacheTtl: 0, cacheEverything: false }
-        });
-      } else {
-        const fetchOptions = { signal: controller.signal };
-        if (request.method === "GET" || request.method === "HEAD") {
-          fetchOptions.cf = {
-            cacheTtl: 0,
-            cacheEverything: false,
-            // Use the proxied www A record as the primary-origin address for both
-            // the apex and www routes. resolveOverride changes DNS resolution only;
-            // the original request hostname/Host header is preserved.
-            resolveOverride: "www.redriverlab.me"
-          };
-        }
-        originResponse = await fetch(request, fetchOptions);
-      }
+      const originResponse = await fetch(request, fetchOptions);
 
       // A normal application response (including a real 4xx/redirect) means the
       // origin answered. Only HTTP 5xx is treated as origin failure.
-      if (originResponse.status < 500) {
-        if (!isHealthyOriginTest) return originResponse;
-
-        // A marker makes the successful test origin easy to verify in DevTools.
-        const headers = new Headers(originResponse.headers);
-        headers.set("X-RedRiverLab-Test-Origin", "https://example.com");
-        headers.set("Cache-Control", "no-store, max-age=0");
-        return new Response(originResponse.body, {
-          status: originResponse.status,
-          statusText: originResponse.statusText,
-          headers
-        });
-      }
+      if (originResponse.status < 500) return originResponse;
 
       if (!canServeStaticFallback(request, requestUrl)) return originResponse;
 

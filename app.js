@@ -2,7 +2,7 @@
   const config = window.SITE_CONFIG || {};
   const brand = config.brandName || "RedRiverLab";
   const username = (config.githubUsername || "").trim();
-  const profileUrl = username ? `https://github.com/${encodeURIComponent(username)}` : "https://github.com";
+  const profileUrl = username ? "https://github.com/" + encodeURIComponent(username) : "https://github.com";
   const $ = (id) => document.getElementById(id);
 
   ["brand-name", "footer-brand-name"].forEach((id) => {
@@ -10,17 +10,21 @@
   });
   if ($("brand-logo")) $("brand-logo").src = config.logoPath || "/assets/rr-wordmark-horizontal-web.png";
   if ($("nav-github")) $("nav-github").href = profileUrl;
-  if ($("all-repos-link")) $("all-repos-link").href = `${profileUrl}?tab=repositories`;
+  if ($("all-repos-link")) $("all-repos-link").href = profileUrl + "?tab=repositories";
 
   const status = config.serverStatus === "online" ? "online" : "offline";
   const statusTitle = $("status-title");
   const statusMessage = $("status-message");
   const statusChip = $("status-chip-label");
   const statusPanel = document.querySelector(".status-panel");
-  if (statusTitle) statusTitle.textContent = status === "online" ? "Ana sunucu yeniden çevrimiçi." : (config.serverStatusTitle || "Ana sunucu çevrimdışı.");
-  if (statusMessage) statusMessage.textContent = config.serverStatusMessage || (status === "online"
-    ? "Ana sunucu tekrar erişilebilir durumda."
-    : "Ana sunucu şu anda erişilemiyor. Bu geçici yedek sayfa Cloudflare üzerinde bağımsız olarak yayınlanır.");
+  if (statusTitle) {
+    statusTitle.textContent = status === "online" ? "Ana sunucu yeniden çevrimiçi." : (config.serverStatusTitle || "Ana sunucu çevrimdışı.");
+  }
+  if (statusMessage) {
+    statusMessage.textContent = config.serverStatusMessage || (status === "online"
+      ? "Ana sunucu tekrar erişilebilir durumda."
+      : "Ana sunucu şu anda erişilemiyor. Bu yedek arayüz, ana sunucudan bağımsız olarak yayınlanır.");
+  }
   if (statusChip) statusChip.textContent = status === "online" ? "SERVER ONLINE" : "SERVER OFFLINE";
   if (statusPanel) statusPanel.classList.toggle("is-online", status === "online");
 
@@ -38,7 +42,8 @@
 
   function showMessage(message) {
     if (count) count.textContent = "GITHUB / ŞU ANDA ERİŞİLEMİYOR";
-    if (grid) grid.innerHTML = `<p class="project-empty">${esc(message)} <a href="${esc(profileUrl)}" target="_blank" rel="noopener noreferrer">GitHub profilini aç ↗</a></p>`;
+    if (grid) grid.innerHTML = '<p class="project-empty">' + esc(message) +
+      ' <a href="' + esc(profileUrl) + '" target="_blank" rel="noopener noreferrer">GitHub profilini aç ↗</a></p>';
   }
 
   function renderRepos(repos) {
@@ -48,7 +53,7 @@
       .slice(0, 6);
 
     if (count) count.textContent = visible.length
-      ? `HERKESE AÇIK DEPOLAR / ${String(visible.length).padStart(2, "0")}`
+      ? "HERKESE AÇIK DEPOLAR / " + String(visible.length).padStart(2, "0")
       : "GITHUB / GÖSTERİLECEK DEPO YOK";
     if (!grid) return;
     if (!visible.length) {
@@ -58,16 +63,15 @@
 
     grid.innerHTML = visible.map((repo, index) => {
       const url = safeUrl(repo.html_url) || profileUrl;
-      const description = repo.description || "Bu proje için açıklama eklenmemiş.";
+      const description = repo.description || "Bu proje için henüz açıklama eklenmemiş.";
       const language = repo.language || "Çeşitli teknolojiler";
-      return `<article class="project-row">
-        <span class="project-number">${String(index + 1).padStart(2, "0")}</span>
-        <div class="project-main">
-          <a class="project-title" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(repo.name)} ↗</a>
-          <p class="project-description">${esc(description)}</p>
-        </div>
-        <span class="project-language">${esc(language)}</span>
-      </article>`;
+      const number = String(index + 1).padStart(2, "0");
+      return '<article class="project-card">' +
+        '<div class="project-card-top"><span class="project-index">PROJECT / ' + number + '</span><span class="project-language">' + esc(language) + '</span></div>' +
+        '<h3><a class="project-title" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(repo.name) + '</a></h3>' +
+        '<p class="project-description">' + esc(description) + '</p>' +
+        '<div class="project-card-footer"><span>PUBLIC REPOSITORY</span><a class="project-open" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">Kodu incele <span aria-hidden="true">↗</span></a></div>' +
+        '</article>';
     }).join("");
   }
 
@@ -77,10 +81,10 @@
       return;
     }
     try {
-      const response = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated&type=owner`, {
+      const response = await fetch("https://api.github.com/users/" + encodeURIComponent(username) + "/repos?per_page=100&sort=updated&type=owner", {
         headers: { "Accept": "application/vnd.github+json" }
       });
-      if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+      if (!response.ok) throw new Error("GitHub API " + response.status);
       const repos = await response.json();
       if (!Array.isArray(repos)) throw new Error("Beklenmeyen GitHub yanıtı");
       renderRepos(repos);
