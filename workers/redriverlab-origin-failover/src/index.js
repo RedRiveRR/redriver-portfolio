@@ -66,10 +66,15 @@ export default {
     // Cloudflare Route redriverlab.me/* executes before the existing DNS origin.
     // fetch(request) below reaches that configured origin without changing the
     // visitor-visible URL. The proxied DNS record must remain in place.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort("Primary origin timed out"), 4000);
+
     try {
-      const originResponse = await fetch(request, {
-        cf: { cacheTtl: 0, cacheEverything: false }
-      });
+      const fetchOptions = { signal: controller.signal };
+      if (request.method === "GET" || request.method === "HEAD") {
+        fetchOptions.cf = { cacheTtl: 0, cacheEverything: false };
+      }
+      const originResponse = await fetch(request, fetchOptions);
 
       // A normal application response (including a real 4xx/redirect) means the
       // primary server answered. Only HTTP 5xx is treated as origin failure.
@@ -94,6 +99,8 @@ export default {
         });
       }
       return await serveFallback(request, requestUrl);
+    } finally {
+      clearTimeout(timeout);
     }
   }
 };
