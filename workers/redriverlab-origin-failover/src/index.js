@@ -166,8 +166,18 @@ export default {
     const timeout = setTimeout(() => controller.abort("Primary origin timed out"), 4000);
 
     try {
+      // The status endpoint probes the real homepage, not this synthetic path,
+      // so an application-level 404 on /_origin-status cannot look like an outage.
+      const originRequest = isStatusRequest
+        ? new Request(new URL("/", requestUrl).toString(), {
+            method: "GET",
+            headers: { "Accept": "text/html", "Cache-Control": "no-cache" },
+            redirect: "manual"
+          })
+        : request;
+
       const fetchOptions = { signal: controller.signal };
-      if (request.method === "GET" || request.method === "HEAD") {
+      if (originRequest.method === "GET" || originRequest.method === "HEAD") {
         fetchOptions.cf = {
           cacheTtl: 0,
           cacheEverything: false,
@@ -177,7 +187,7 @@ export default {
         };
       }
 
-      const originResponse = await fetch(request, fetchOptions);
+      const originResponse = await fetch(originRequest, fetchOptions);
       const primaryIsResponding = originResponse.status < 500;
 
       if (isStatusRequest) {
@@ -200,9 +210,13 @@ export default {
       }
 
       // Any non-5xx origin response (including normal 4xx/redirect responses)
-      // means the host answered; clear the outage timer on that first success.
+      // means the host answered. A successful page request force-checks persistent
+      // state so another Worker isolate cannot leave a stale offline timestamp.
       if (primaryIsResponding) {
-        await syncOriginStatus(env, "online");
+        const accept = request.headers.get("Accept") || "";
+        const isPageRequest = request.method === "GET" &&
+          (requestUrl.pathname === "/" || accept.includes("text/html"));
+        await syncOriginStatus(env, "online", isPageRequest);
         return originResponse;
       }
 
