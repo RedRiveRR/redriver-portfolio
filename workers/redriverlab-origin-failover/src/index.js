@@ -129,18 +129,36 @@ export class OriginStatus extends DurableObject {
     const now = Date.now();
 
     if (pathname === "/offline") {
-      const stored = await this.ctx.storage.get("offlineSince");
-      const offlineSince = typeof stored === "number" && Number.isFinite(stored) ? stored : now;
-      if (offlineSince !== stored) {
-        await this.ctx.storage.put("offlineSince", offlineSince);
-      }
+      const offlineSince = await this.ctx.storage.transaction(async (txn) => {
+        const initialized = await txn.get("offlineCounterSeeded");
+        const stored = await txn.get("offlineSince");
+
+        // Seed the outage already in progress to 1085 hours, once only.
+        // After the first recovery, future outages use their true first-failure time.
+        if (initialized !== true) {
+          const seededSince = now - (1085 * 60 * 60 * 1000);
+          await txn.put("offlineCounterSeeded", true);
+          await txn.put("offlineSince", seededSince);
+          return seededSince;
+        }
+
+        if (typeof stored === "number" && Number.isFinite(stored)) return stored;
+
+        await txn.put("offlineSince", now);
+        return now;
+      });
+
       return Response.json({ state: "offline", offlineSince, observedAt: now }, {
         headers: { "Cache-Control": "no-store, max-age=0" }
       });
     }
 
     if (pathname === "/online") {
-      await this.ctx.storage.delete("offlineSince");
+      await this.ctx.storage.transaction(async (txn) => {
+        await txn.delete("offlineSince");
+        // Mark one-time initialization done so any later outage starts at zero.
+        await txn.put("offlineCounterSeeded", true);
+      });
       return Response.json({ state: "online", offlineSince: null, observedAt: now }, {
         headers: { "Cache-Control": "no-store, max-age=0" }
       });
