@@ -3,7 +3,7 @@ window.SITE_CONFIG = {
   brandName: "RedRiverLab",
   githubUsername: "RedRiveRR",
   logoPath: "/assets/rr-wordmark-horizontal-web.png",
-  serverStatus: "offline", // Change to "online" when the primary host is back.
+  serverStatus: "offline",
   serverStatusTitle: "Ana sunucu çevrimdışı.",
-  serverStatusMessage: "Ana sunucu şu anda erişilemiyor. Bu geçici yedek sayfa, ana site yeniden devreye alınana kadar Cloudflare üzerinde bağımsız olarak yayında kalır."
+  serverStatusMessage: "Geçici olarak yedek sayfa üzerinden hizmet veriyoruz. Ana sunucu tekrar yanıt verdiğinde normal yayın otomatik olarak devam eder."
 };
