@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090a0d">
-  <meta name="description" content="RedRiverLab — yazılım, yapay zekâ ve altyapı etrafında geliştirilen bağımsız projeler ve deneyler.">
+  <meta name="theme-color" content="#050505">
+  <meta name="description" content="RedRiverLab geçici yedek sayfası. Ana sunucunun durumunu ve GitHub proje bağlantılarını gösterir.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="RedRiverLab — Ideas into systems">
-  <meta property="og:description" content="Yazılım, yapay zekâ ve altyapı etrafında geliştirilen bağımsız projeler.">
+  <meta property="og:title" content="RedRiverLab — Geçici Yedek Sayfa">
+  <meta property="og:description" content="Ana sunucu yeniden devreye alınana kadar geçici durum ve proje sayfası.">
   <meta property="og:image" content="/assets/rr-icon-web.png">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/rr-icon-web.png" type="image/png">
   <link rel="preconnect" href="https://api.github.com" crossorigin>
   <link rel="stylesheet" href="/styles.css">
-  <title>RedRiverLab — Ideas into systems</title>
+  <title>RedRiverLab — Geçici Yedek Sayfa</title>
   <script src="/site-config.js"></script>
   <script src="/app.js" defer></script>
 </head>
@@ -21,133 +21,58 @@
   <a class="skip-link" href="#main">İçeriğe geç</a>
 
   <header class="site-header" id="top">
-    <div class="header-inner">
-      <a class="brand" href="#top" aria-label="RedRiverLab ana sayfa">
-        <img id="brand-logo" src="/assets/rr-wordmark-horizontal-web.png" width="166" height="46" alt="RedRiverLab">
-        <span id="brand-name" class="sr-only">REDRIVERLAB</span>
-      </a>
-      <nav class="main-nav" aria-label="Ana menü">
-        <a href="#focus">Odak alanları</a>
-        <a href="#projects">Projeler</a>
-        <a class="nav-github" id="nav-github" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
-      </nav>
-    </div>
+    <a class="brand" href="#top" aria-label="RedRiver ana sayfa">
+      <img id="brand-logo" src="/assets/rr-wordmark-horizontal-web.png" width="166" height="46" alt="RedRiver">
+      <span id="brand-name" class="sr-only">REDRIVERLAB</span>
+    </a>
+    <nav class="main-nav" aria-label="Ana menü">
+      <a href="#projects">Projeler</a>
+      <a href="#status">Sistem durumu</a>
+      <a class="nav-github" id="nav-github" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
   </header>
 
   <main id="main">
-    <section class="hero page-shell" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> REDRIVERLAB <span class="eyebrow-divider">/</span> INDEPENDENT ENGINEERING</p>
-        <h1 id="hero-title">Fikirler, <span>çalışan sistemlere</span> dönüşür.</h1>
-        <p class="hero-lead">Yazılım, yapay zekâ ve altyapı etrafında geliştirilen bağımsız projeler. Merakla başlar, gerçek dünyada işe yarayan araçlara dönüşür.</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#projects">Projeleri keşfet <span aria-hidden="true">↘</span></a>
-          <a class="button button-secondary" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GitHub profili <span aria-hidden="true">↗</span></a>
-        </div>
-        <div class="hero-tags" aria-label="Odak alanları">
-          <span>SOFTWARE</span><span>AI &amp; AUTOMATION</span><span>INFRASTRUCTURE</span>
-        </div>
-      </div>
-
-      <div class="hero-art" aria-hidden="true">
-        <div class="art-grid"></div>
-        <div class="art-orbit orbit-one"></div>
-        <div class="art-orbit orbit-two"></div>
-        <div class="art-orbit orbit-three"></div>
-        <div class="art-cross cross-one"></div>
-        <div class="art-cross cross-two"></div>
-        <div class="art-center">
-          <img src="/assets/rr-icon-web.png" alt="">
-          <span>RR<span class="accent">/</span>LAB</span>
-        </div>
-        <div class="art-label art-label-top"><span class="art-label-dot"></span> RESEARCH · BUILD · ITERATE</div>
-        <div class="art-label art-label-bottom"><span>SYS // 001</span><span>INDEPENDENT BY DESIGN</span></div>
-        <span class="art-coordinate coordinate-one">41°00' N</span>
-        <span class="art-coordinate coordinate-two">ENGINEERING NOTES</span>
-      </div>
-    </section>
-
-    <section class="status-section page-shell" id="status" aria-labelledby="status-title">
+    <section class="status-section" id="status" aria-labelledby="status-title">
       <div class="status-panel" aria-live="polite">
         <div class="status-icon" aria-hidden="true"><span></span></div>
         <div class="status-content">
-          <p class="status-label">ORIGIN / PRIMARY NODE</p>
-          <h2 id="status-title">Ana sunucu çevrimdışı.</h2>
-          <p id="status-message">Ana sunucu şu anda erişilemiyor. Bu yedek arayüz, ana sunucudan bağımsız olarak yayınlanır.</p>
+          <p class="status-label">ANA SUNUCU / DURUM RAPORU</p>
+          <h1 id="status-title">Ana sunucu çevrimdışı.</h1>
+          <p id="status-message">Ana sunucu şu anda erişilemiyor. Bu yedek sayfa Cloudflare üzerinde bağımsız olarak yayınlanır.</p>
         </div>
         <div class="status-meta">
           <span class="status-chip"><span class="status-dot" aria-hidden="true"></span><span id="status-chip-label">SERVER OFFLINE</span></span>
-          <span class="meta-caption">CLOUDFLARE <span aria-hidden="true">/</span> STATIC FAILOVER</span>
+          <span class="meta-caption">CLOUDFLARE / STATIC FAILOVER</span>
         </div>
       </div>
-      <p class="status-footnote"><span aria-hidden="true">↳</span> Yedek katman, ana sunucu yanıt vermediğinde devreye girer.</p>
     </section>
 
-    <section class="focus-section page-shell" id="focus" aria-labelledby="focus-title">
-      <div class="section-heading">
+    <section class="temporary-note" aria-label="Geçici site bilgisi">
+      <span class="temporary-label"><span aria-hidden="true"></span> GEÇİCİ YEDEK SAYFA</span>
+      <p>Ana site tekrar devreye alınana kadar burada yalnızca sistem durumu ve proje bağlantıları bulunacak.</p>
+    </section>
+
+    <section class="projects-section" id="projects" aria-labelledby="projects-title">
+      <div class="projects-heading">
         <div>
-          <p class="section-kicker">WHAT WE WORK ON</p>
-          <h2 id="focus-title">Merak alanları<span class="accent">.</span></h2>
+          <p class="tiny-label">GITHUB / PUBLIC REPOSITORIES</p>
+          <h2 id="projects-title">Projeler<span>.</span></h2>
         </div>
-        <p class="section-intro">Farklı disiplinleri küçük, anlaşılır ve çalıştırılabilir sistemlerde bir araya getirmek.</p>
+        <a id="all-repos-link" class="all-repos-link" href="https://github.com/RedRiveRR?tab=repositories" target="_blank" rel="noopener noreferrer">Tüm projeler ↗</a>
       </div>
-      <div class="focus-grid">
-        <article class="focus-card">
-          <div class="focus-card-top"><span class="focus-number">01</span><span class="focus-symbol" aria-hidden="true">↗</span></div>
-          <p class="focus-label">SOFTWARE &amp; TOOLING</p>
-          <h3>İş akışlarını kolaylaştıran araçlar.</h3>
-          <p>Tekrarlanan işleri azaltan, geliştirici deneyimini iyileştiren ve açıkça test edilebilen yazılımlar.</p>
-        </article>
-        <article class="focus-card">
-          <div class="focus-card-top"><span class="focus-number">02</span><span class="focus-symbol" aria-hidden="true">✳</span></div>
-          <p class="focus-label">AI &amp; AUTOMATION</p>
-          <h3>Akıllı sistemler, gerçek kullanım.</h3>
-          <p>Yapay zekâ ve otomasyonu pratik görevlerle buluşturan deneyler ve entegrasyonlar.</p>
-        </article>
-        <article class="focus-card">
-          <div class="focus-card-top"><span class="focus-number">03</span><span class="focus-symbol" aria-hidden="true">⌘</span></div>
-          <p class="focus-label">INFRASTRUCTURE</p>
-          <h3>Sağlam temeller, daha az sürpriz.</h3>
-          <p>Self-hosted servisler, ağlar ve arıza anlarında ayakta kalmayı hedefleyen altyapılar.</p>
-        </article>
+      <div id="project-count" class="project-count">GitHub depoları yükleniyor…</div>
+      <div id="project-grid" class="project-list" aria-live="polite">
+        <p class="project-placeholder">Herkese açık projeler alınıyor…</p>
       </div>
-    </section>
-
-    <section class="projects-section page-shell" id="projects" aria-labelledby="projects-title">
-      <div class="section-heading projects-heading">
-        <div>
-          <p class="section-kicker">SELECTED WORK / GITHUB</p>
-          <h2 id="projects-title">Projeler<span class="accent">.</span></h2>
-        </div>
-        <a id="all-repos-link" class="all-repos-link" href="https://github.com/RedRiveRR?tab=repositories" target="_blank" rel="noopener noreferrer">Tüm depolar <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="project-toolbar">
-        <p id="project-count" class="project-count">GitHub depoları yükleniyor…</p>
-        <span class="project-live"><span aria-hidden="true"></span> PUBLIC REPOSITORIES</span>
-      </div>
-      <div id="project-grid" class="project-grid" aria-live="polite">
-        <article class="project-card project-card-loading"><span class="loading-line"></span><span class="loading-line short"></span><span class="loading-line medium"></span></article>
-        <article class="project-card project-card-loading"><span class="loading-line"></span><span class="loading-line short"></span><span class="loading-line medium"></span></article>
-        <article class="project-card project-card-loading"><span class="loading-line"></span><span class="loading-line short"></span><span class="loading-line medium"></span></article>
-      </div>
-      <p class="projects-footnote">Gösterilen depolar herkese açıktır. Kod, ayrıntılar ve güncel geliştirme durumu GitHub’da.</p>
-    </section>
-
-    <section class="closing-strip page-shell" aria-label="GitHub bağlantısı">
-      <div>
-        <p class="section-kicker">FOLLOW THE WORK</p>
-        <h2>Yeni fikirler yolda<span class="accent">.</span></h2>
-      </div>
-      <a class="button button-secondary" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GitHub’da takip et <span aria-hidden="true">↗</span></a>
+      <p class="projects-footnote">Yalnızca herkese açık depolar gösterilir.</p>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div class="footer-inner">
-      <a class="footer-brand" href="#top"><img src="/assets/rr-icon-web.png" alt="" width="24" height="24"><span id="footer-brand-name">REDRIVERLAB</span></a>
-      <span class="footer-copy">Independent projects. Built with intent.</span>
-      <a class="footer-github" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GITHUB <span aria-hidden="true">↗</span></a>
-    </div>
+    <a class="footer-brand" href="#top"><img src="/assets/rr-icon-web.png" alt="" width="22" height="22"><span id="footer-brand-name">REDRIVERLAB</span></a>
+    <span class="footer-temporary">Geçici yayın · Ana sunucudan bağımsız</span>
+    <a class="footer-github" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
   </footer>
 </body>
 </html>
