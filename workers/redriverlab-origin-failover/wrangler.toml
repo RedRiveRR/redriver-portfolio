@@ -6,3 +6,7 @@ workers_dev = false
 [[routes]]
 pattern = "redriverlab.me/*"
 zone_name = "redriverlab.me"
+
+[[routes]]
+pattern = "www.redriverlab.me/*"
+zone_name = "redriverlab.me"
