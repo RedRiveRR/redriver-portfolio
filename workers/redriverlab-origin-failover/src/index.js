@@ -1,4 +1,8 @@
+import { DurableObject } from "cloudflare:workers";
+
 const FALLBACK_ORIGIN = "https://redriver-portfolio.pages.dev";
+const STATUS_PATH = "/_origin-status";
+let lastObservedOriginState = "unknown";
 const ASSET_EXTENSION = /\.(?:avif|css|eot|gif|ico|jpe?g|js|json|map|mjs|otf|png|svg|txt|webmanifest|webp|woff2?|ttf)$/i;
 
 function canServeStaticFallback(request, url) {
@@ -49,6 +53,23 @@ async function serveFallback(request, requestUrl) {
     });
     const responseHeaders = new Headers(response.headers);
     responseHeaders.set("Cache-Control", "no-store, max-age=0");
+
+    // Mark only Worker-served fallback HTML so its duration script never runs
+    // on the live primary website.
+    if (request.method === "GET" && (response.headers.get("content-type") || "").includes("text/html")) {
+      let html = await response.text();
+      const marker = '<meta name="redriverlab-fallback" content="active">';
+      if (!html.includes(marker)) html = html.replace(/<\/head>/i, marker + "\n</head>");
+      responseHeaders.delete("content-length");
+      responseHeaders.delete("content-encoding");
+      responseHeaders.delete("etag");
+      return new Response(html, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: responseHeaders
+      });
+    }
+
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
@@ -59,42 +80,162 @@ async function serveFallback(request, requestUrl) {
   }
 }
 
-export default {
-  async fetch(request) {
-    const requestUrl = new URL(request.url);
+async function syncOriginStatus(env, state, force = false) {
+  if (!force && lastObservedOriginState === state) {
+    return { state, offlineSince: null };
+  }
 
-    // Cloudflare Route redriverlab.me/* executes before the existing DNS origin.
-    // fetch(request) below reaches that configured origin without changing the
-    // visitor-visible URL. The proxied DNS record must remain in place.
+  try {
+    if (!env.ORIGIN_STATUS) throw new Error("ORIGIN_STATUS binding is missing");
+    const id = env.ORIGIN_STATUS.idFromName("redriverlab-primary-origin");
+    const stub = env.ORIGIN_STATUS.get(id);
+    const response = await stub.fetch(new Request("https://origin-status/" + state, {
+      method: "POST"
+    }));
+    if (!response.ok) throw new Error("Origin status storage returned " + response.status);
+
+    const result = await response.json();
+    if (result.state !== "unknown") lastObservedOriginState = result.state;
+    return result;
+  } catch (error) {
+    // Tracking must never take the site down. The fallback remains available
+    // even if the status store is temporarily unavailable.
+    return { state: "unknown", offlineSince: null };
+  }
+}
+
+function statusJson(payload) {
+  return new Response(JSON.stringify(payload), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store, max-age=0",
+      "X-Content-Type-Options": "nosniff"
+    }
+  });
+}
+
+/** Stores the first failed-origin timestamp across Worker isolates and restarts. */
+export class OriginStatus extends DurableObject {
+  async fetch(request) {
+    if (request.method !== "POST") {
+      return new Response("Method not allowed", {
+        status: 405,
+        headers: { "Allow": "POST", "Cache-Control": "no-store" }
+      });
+    }
+
+    const { pathname } = new URL(request.url);
+    const now = Date.now();
+
+    if (pathname === "/offline") {
+      const stored = await this.ctx.storage.get("offlineSince");
+      const offlineSince = typeof stored === "number" && Number.isFinite(stored) ? stored : now;
+      if (offlineSince !== stored) {
+        await this.ctx.storage.put("offlineSince", offlineSince);
+      }
+      return Response.json({ state: "offline", offlineSince, observedAt: now }, {
+        headers: { "Cache-Control": "no-store, max-age=0" }
+      });
+    }
+
+    if (pathname === "/online") {
+      await this.ctx.storage.delete("offlineSince");
+      return Response.json({ state: "online", offlineSince: null, observedAt: now }, {
+        headers: { "Cache-Control": "no-store, max-age=0" }
+      });
+    }
+
+    return new Response("Not found", { status: 404 });
+  }
+}
+
+export default {
+  async fetch(request, env) {
+    const requestUrl = new URL(request.url);
+    const isStatusRequest = requestUrl.pathname === STATUS_PATH;
+
+    if (isStatusRequest && request.method !== "GET" && request.method !== "HEAD") {
+      return new Response("Method not allowed", {
+        status: 405,
+        headers: { "Allow": "GET, HEAD", "Cache-Control": "no-store, max-age=0" }
+      });
+    }
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort("Primary origin timed out"), 4000);
 
     try {
+      // The status endpoint probes the real homepage, not this synthetic path,
+      // so an application-level 404 on /_origin-status cannot look like an outage.
+      const originRequest = isStatusRequest
+        ? new Request(new URL("/", requestUrl).toString(), {
+            method: "GET",
+            headers: { "Accept": "text/html", "Cache-Control": "no-cache" },
+            redirect: "manual"
+          })
+        : request;
+
       const fetchOptions = { signal: controller.signal };
-      if (request.method === "GET" || request.method === "HEAD") {
+      if (originRequest.method === "GET" || originRequest.method === "HEAD") {
         fetchOptions.cf = {
           cacheTtl: 0,
           cacheEverything: false,
-          // Use the proxied www A record as the primary-origin address for both
-          // the apex and www routes. resolveOverride changes DNS resolution only;
-          // the original request hostname/Host header is preserved.
+          // Both apex and www reach the real primary through the proxied www A record.
+          // resolveOverride changes DNS resolution only; the request hostname stays intact.
           resolveOverride: "www.redriverlab.me"
         };
       }
-      const originResponse = await fetch(request, fetchOptions);
 
-      // A normal application response (including a real 4xx/redirect) means the
-      // origin answered. Only HTTP 5xx is treated as origin failure.
-      if (originResponse.status < 500) return originResponse;
+      const originResponse = await fetch(originRequest, fetchOptions);
+      const primaryIsResponding = originResponse.status < 500;
 
+      if (isStatusRequest) {
+        if (originResponse.body) originResponse.body.cancel().catch(() => {});
+        if (primaryIsResponding) {
+          const saved = await syncOriginStatus(env, "online", true);
+          return statusJson({
+            state: saved.state === "online" ? "online" : "unknown",
+            offlineSince: null,
+            checkedAt: Date.now()
+          });
+        }
+
+        const saved = await syncOriginStatus(env, "offline", true);
+        return statusJson({
+          state: saved.state === "offline" ? "offline" : "unknown",
+          offlineSince: saved.state === "offline" ? saved.offlineSince : null,
+          checkedAt: Date.now()
+        });
+      }
+
+      // Any non-5xx origin response (including normal 4xx/redirect responses)
+      // means the host answered. A successful page request force-checks persistent
+      // state so another Worker isolate cannot leave a stale offline timestamp.
+      if (primaryIsResponding) {
+        const accept = request.headers.get("Accept") || "";
+        const isPageRequest = request.method === "GET" &&
+          (requestUrl.pathname === "/" || accept.includes("text/html"));
+        await syncOriginStatus(env, "online", isPageRequest);
+        return originResponse;
+      }
+
+      await syncOriginStatus(env, "offline");
       if (!canServeStaticFallback(request, requestUrl)) return originResponse;
 
-      if (originResponse.body) {
-        originResponse.body.cancel().catch(() => {});
-      }
+      if (originResponse.body) originResponse.body.cancel().catch(() => {});
       return await serveFallback(request, requestUrl);
     } catch {
-      // DNS/origin connection failures and timeouts reach this path.
+      if (isStatusRequest) {
+        const saved = await syncOriginStatus(env, "offline", true);
+        return statusJson({
+          state: saved.state === "offline" ? "offline" : "unknown",
+          offlineSince: saved.state === "offline" ? saved.offlineSince : null,
+          checkedAt: Date.now()
+        });
+      }
+
+      await syncOriginStatus(env, "offline");
       if (!canServeStaticFallback(request, requestUrl)) {
         return new Response("Primary origin unavailable.", {
           status: 503,

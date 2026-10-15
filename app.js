@@ -24,6 +24,92 @@
   if (statusChip) statusChip.textContent = status === "online" ? "SERVER ONLINE" : "SERVER OFFLINE";
   if (statusPanel) statusPanel.classList.toggle("is-online", status === "online");
 
+  // The counter runs only on HTML injected by the failover Worker.
+  // Its start time is stored in a Durable Object, not in visitor-local storage.
+  const fallbackMarker = document.querySelector('meta[name="redriverlab-fallback"][content="active"]');
+  const outageDuration = $("outage-duration");
+  if (fallbackMarker && outageDuration) {
+    let elapsedAtLastSync = 0;
+    let localSyncTime = 0;
+    let tickTimer = null;
+    let checkingStatus = false;
+    let reloadPending = false;
+
+    function formatDuration(milliseconds) {
+      const seconds = Math.max(0, Math.floor(milliseconds / 1000));
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+      return hours + " saat " + minutes + " dk " + remainingSeconds + " sn";
+    }
+
+    function renderDuration() {
+      if (!localSyncTime) return;
+      const elapsed = elapsedAtLastSync + (Date.now() - localSyncTime);
+      outageDuration.textContent = "Kesinti süresi: " + formatDuration(elapsed);
+    }
+
+    async function checkOriginStatus() {
+      if (checkingStatus || reloadPending) return;
+      checkingStatus = true;
+
+      try {
+        const response = await fetch("/_origin-status", {
+          method: "GET",
+          cache: "no-store",
+          headers: { "Accept": "application/json" }
+        });
+        if (!response.ok) throw new Error("Origin status returned HTTP " + response.status);
+
+        const current = await response.json();
+        if (current.state === "offline" &&
+            typeof current.offlineSince === "number" &&
+            Number.isFinite(current.offlineSince)) {
+          // Use the Worker-provided check time to avoid depending on the
+          // visitor device's wall clock being perfectly synchronized.
+          const serverNow = Number.isFinite(current.checkedAt) ? current.checkedAt : Date.now();
+          elapsedAtLastSync = Math.max(0, serverNow - current.offlineSince);
+          localSyncTime = Date.now();
+
+          if (statusTitle) statusTitle.textContent = config.serverStatusTitle || "Ana sunucu çevrimdışı.";
+          if (statusMessage) {
+            statusMessage.textContent = config.serverStatusMessage ||
+              "Geçici olarak yedek sayfa üzerinden hizmet veriyoruz. Ana sunucu tekrar yanıt verdiğinde normal yayın otomatik olarak devam eder.";
+          }
+          if (statusPanel) statusPanel.classList.remove("is-online");
+
+          renderDuration();
+          if (tickTimer === null) tickTimer = setInterval(renderDuration, 1000);
+          return;
+        }
+
+        if (current.state === "online") {
+          if (tickTimer !== null) clearInterval(tickTimer);
+          tickTimer = null;
+          reloadPending = true;
+          if (statusTitle) statusTitle.textContent = "Ana sunucu yeniden çevrimiçi.";
+          if (statusMessage) statusMessage.textContent = "Bağlantı geri geldi. Normal site yükleniyor…";
+          if (statusPanel) statusPanel.classList.add("is-online");
+          outageDuration.textContent = "Kesinti süresi sıfırlandı.";
+          // Replace the fallback view with the primary website after the
+          // Worker has confirmed a successful primary-origin response.
+          setTimeout(() => window.location.reload(), 1200);
+          return;
+        }
+
+        if (!localSyncTime) outageDuration.textContent = "Kesinti süresi şu an alınamıyor.";
+      } catch {
+        if (!localSyncTime) outageDuration.textContent = "Kesinti süresi hesaplanıyor…";
+      } finally {
+        checkingStatus = false;
+      }
+    }
+
+    void checkOriginStatus();
+    setInterval(checkOriginStatus, 15000);
+  }
+
+
   const grid = $("project-grid");
   const count = $("project-count");
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
