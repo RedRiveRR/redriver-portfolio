@@ -48,6 +48,7 @@ a:focus-visible { outline: 2px solid #f5f5f5; outline-offset: 4px; }
 .status-dot { flex: 0 0 auto; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #d94b4b; }
 .status-panel.is-online .status-dot { background: #bdbdbd; }
 .status-message { max-width: 500px; margin: 12px 0 0; color: #a0a0a0; font-size: 13px; line-height: 1.7; }
+.status-duration { margin: 17px 0 0; padding-top: 13px; border-top: 1px solid var(--line-soft); color: #d0d0d0; font: 10px/1.6 var(--mono); letter-spacing: .025em; }
 .status-footnote { margin: 19px 0 0; color: #777; font: 8px/1.5 var(--mono); letter-spacing: .06em; }
 
 .hosting-info { display: flex; align-items: baseline; justify-content: center; gap: 14px; margin: 24px auto 0; padding: 17px 8px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line-soft); }
