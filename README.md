@@ -1,41 +1,45 @@
-# RedRive — Cloudflare Pages Portfolio
+# RedRiverLab — Cloudflare Pages failover
 
-Ana sunucudan bağımsız çalışan, statik ve siyah-beyaz portföy sitesi. Node.js veya build komutu gerektirmez. GitHub'daki herkese açık depoları GitHub API üzerinden otomatik listeler.
+Bu depo, ana sunucudan bağımsız çalışacak statik RedRiverLab portföyüdür. Sayfa; RedRiver tasarım dilini, marka görsellerini, ana sunucunun durum bildirimini ve GitHub'daki herkese açık depoları içerir.
 
-## Önce kişiselleştir
+## İçerik
 
-1. `site-config.js` dosyasını aç.
-2. `brandName` değerini marka adına göre değiştir.
-3. `githubUsername` değerinin GitHub kullanıcı adın olduğundan emin ol. Başlangıç değeri `RedRiveRR`.
-4. Ana sunucu geri geldiğinde `serverStatus: "online"` yapabilirsin. Çevrimdışı uyarısı için `"offline"` olarak bırak.
-5. Kendi logonu `assets/logo.svg` dosyasının yerine koy. PNG kullanırsan `site-config.js` içindeki `logoPath` değerini örneğin `/assets/logo.png` yap; favicon için `assets/favicon.svg` dosyasını da kendi ikonunla değiştir.
+- `index.html`: Ana sayfa, marka alanı, sunucu durumu ve proje vitrini.
+- `styles.css`: Koyu arayüz, tipografi, kartlar, responsive düzen ve animasyonlar.
+- `app.js`: Sunucu durumunu yapılandırmadan işler ve herkese açık GitHub depolarını listeler.
+- `site-config.js`: Marka adı, GitHub kullanıcı adı, logo yolu ve sunucu durumunu içerir. **Gizli anahtar veya kimlik bilgisi buraya eklenmemelidir.**
+- `assets/`: Logo, wordmark ve favicon dosyaları.
+- `404.html`: Markalı bulunamadı sayfası.
+- `_headers`: Statik yanıtlar için güvenlik başlıkları.
 
-> Projeler bölümü herkese açık depoları gösterir; özel depolar ziyaretçilere gösterilmez. GitHub API geçici olarak sınırlandırılırsa bağlantı üzerinden profilin yine açılır.
+## Yapılandırma
 
-## Önerilen yayınlama: GitHub bağlantısı ile Cloudflare Pages
+`site-config.js` dosyasındaki alanlar:
 
-Bu yöntemle dosyaları GitHub'a her gönderdiğinde site otomatik güncellenir.
+- `brandName`: Görünen marka adı.
+- `githubUsername`: Herkese açık depoları listelenecek GitHub hesabı.
+- `logoPath`: Üst menüde kullanılacak yatay logo dosyası.
+- `serverStatus`: Ana sunucu kapalıysa `"offline"`, geri döndüğünde `"online"`.
+- `serverStatusTitle` ve `serverStatusMessage`: Durum panelindeki açıklama.
 
-1. Bu klasörü yeni bir GitHub deposuna yükle (ör. `portfolio-site`).
-2. Cloudflare Dashboard → **Workers & Pages** → **Create application** → **Pages** → Git bağlantısı ile başlat.
-3. GitHub hesabını bağla ve bu depoyu seç.
-4. Framework preset: **None**; Build command: boş; Build output directory: `.` (repo kökündeki `index.html`).
-5. Deploy et. Cloudflare sana bir `*.pages.dev` adresi verir.
-6. Projede **Custom domains** → **Set up a domain** kısmından kullanmak istediğin alan adını veya alt alan adını ekle ve ekrandaki adımları izle.
+Proje vitrini özel depoları göstermez; ziyaretçiye yalnızca herkese açık GitHub depoları sunulur. GitHub API geçici olarak yanıt vermezse sayfa yüklenmeye devam eder ve profil bağlantısını korur.
 
-## Alternatif: sürükle-bırak ile hızlı yayınlama
+## Cloudflare Pages
 
-1. Bu klasörün içeriğini ZIP olarak paketle.
-2. Cloudflare Dashboard → **Workers & Pages** → **Create application** → **Get started** → **Drag and drop your files**.
-3. Proje adı ver, ZIP'i sürükle ve **Deploy site** seç.
-4. Yayından sonra **Custom domains** ekranından alan adını bağla.
+Git entegrasyonu ile yayınlamak için:
 
-**Önemli:** Cloudflare'ın güncel dokümantasyonuna göre Direct Upload ile oluşturulan bir Pages projesi sonradan Git entegrasyonuna çevrilemiyor. İleride otomatik güncelleme istiyorsan baştan GitHub bağlantısını seç.
+1. Cloudflare Dashboard → **Workers & Pages** → **Create application** → **Pages** akışını aç.
+2. GitHub deposu olarak `RedRiveRR/redriver-portfolio` seç.
+3. Production branch olarak `main` kullan.
+4. Framework preset: **None**.
+5. Build command: boş bırakılabilir; istenirse `exit 0` kullanılabilir.
+6. Build output directory: `.` (depo kökü).
+7. **Save and Deploy** ile yayınla.
 
-## DNS notu
+Bu statik site için Node.js kurulumu veya paket derlemesi gerekmez. Git entegrasyonu açıkken `main` dalına birleştirilen değişiklikler Cloudflare Pages tarafından otomatik yayınlanır.
 
-Alan adının nameserver'ları Cloudflare'daysa, Pages projesindeki **Custom domains** akışını kullan. Sadece DNS'te gelişigüzel CNAME oluşturma; önce alan adını Pages projesine ekle. E-posta kullanıyorsan MX ve e-posta doğrulama TXT kayıtlarını silme.
+Alan adını Pages projesinin **Custom domains** ekranından bağla. E-posta kullanıyorsan mevcut MX ve e-posta doğrulama TXT kayıtlarını silme.
 
-## Yerelde önizleme
+## Yerel önizleme
 
-Dosyaları doğrudan açarak tasarımı görebilirsin; GitHub API isteği için mümkünse basit bir yerel web sunucusu kullan. Örneğin Python kuruluysa bu klasörde `python -m http.server 8000` çalıştırıp `http://localhost:8000` adresini aç.
+Depo kökünde `python -m http.server 8000` çalıştır ve `http://localhost:8000` adresini aç. GitHub proje listesini görüntülemek için internet erişimi gerekir.
