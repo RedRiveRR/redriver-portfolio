@@ -1,9 +1,9 @@
-/* Site settings: change these values to personalize the portfolio. */
+/* Public site settings — no secrets or server credentials belong here. */
 window.SITE_CONFIG = {
-  brandName: "RedRive",
+  brandName: "RedRiverLab",
   githubUsername: "RedRiveRR",
-  logoPath: "/assets/logo.svg",
-  serverStatus: "offline", // "offline" or "online"
-  serverStatusTitle: "Ana sunucu şu anda çevrimdışı.",
-  serverStatusMessage: "Ana sunucu şu anda erişilemiyor. Bu portföy, ana sunucudan bağımsız olarak Cloudflare üzerinde yayınlanır."
+  logoPath: "/assets/rr-wordmark-horizontal-web.png",
+  serverStatus: "offline", // Change to "online" when the primary host is back.
+  serverStatusTitle: "Ana sunucu çevrimdışı.",
+  serverStatusMessage: "Ana sunucu şu anda erişilemiyor. Bu yedek sayfa Cloudflare üzerinde bağımsız olarak yayınlanır."
 };

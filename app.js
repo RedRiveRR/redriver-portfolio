@@ -20,7 +20,7 @@
   const statusMessage = $("status-message");
   const statusChip = $("status-chip-label");
   const statusPanel = document.querySelector(".status-panel");
-  if (statusTitle) statusTitle.textContent = status === "online" ? "Çevrimiçi" : "Çevrimdışı";
+  if (statusTitle) statusTitle.textContent = status === "online" ? "Çevrimiçi" : (config.serverStatusTitle || "Ana sunucu çevrimdışı.");
   if (statusMessage) statusMessage.textContent = config.serverStatusMessage || (status === "online" ? "Ana sunucu çalışıyor." : "Ana sunucu şu anda erişilemiyor. Bu portföy, ana sunucudan bağımsız olarak Cloudflare üzerinde yayınlanır.");
   if (statusChip) statusChip.textContent = status === "online" ? "SERVER ONLINE" : "SERVER OFFLINE";
   if (statusPanel) statusPanel.classList.toggle("is-online", status === "online");
