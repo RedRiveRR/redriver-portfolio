@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#050505">
-  <meta name="description" content="RedRiverLab — açık kaynak araçlar, güvenlik araştırmaları ve bağımsız sistemler.">
+  <meta name="description" content="RedRiverLab geçici yedek sayfası. Ana sunucunun durumunu ve GitHub proje bağlantılarını gösterir.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="RedRiverLab — Araştırma ve Araçlar">
-  <meta property="og:description" content="Açık kaynak araçlar, güvenlik araştırmaları ve bağımsız sistemler.">
+  <meta property="og:title" content="RedRiverLab — Geçici Yedek Sayfa">
+  <meta property="og:description" content="Ana sunucu yeniden devreye alınana kadar geçici durum ve proje sayfası.">
   <meta property="og:image" content="/assets/rr-icon-web.png">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/rr-icon-web.png" type="image/png">
   <link rel="preconnect" href="https://api.github.com" crossorigin>
   <link rel="stylesheet" href="/styles.css">
-  <title>RedRiverLab — Araştırma ve Araçlar</title>
+  <title>RedRiverLab — Geçici Yedek Sayfa</title>
   <script src="/site-config.js"></script>
   <script src="/app.js" defer></script>
 </head>
@@ -33,74 +33,46 @@
   </header>
 
   <main id="main">
-    <section class="hero shell" id="top">
-      <div class="hero-copy">
-        <div class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> REDRIVERLAB <span class="eyebrow-divider">/</span> SYSTEMS &amp; RESEARCH</div>
-        <h1>Güvenlik araştırması.<br><span>Çalışan araçlar.</span></h1>
-        <p class="hero-lead">Açık kaynak araçlar, dijital araştırmalar ve bağımsız sistemler. Ana altyapı geçici olarak çevrimdışı olsa da proje vitrini burada kalır.</p>
-        <div class="hero-actions">
-          <a class="button button-light" href="#projects">Projeleri keşfet <span aria-hidden="true">↓</span></a>
-          <a class="button button-ghost" id="hero-github" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GitHub profili <span aria-hidden="true">↗</span></a>
-        </div>
-      </div>
-
-      <div class="hero-side" aria-label="RedRiver marka işareti">
-        <div class="side-index"><span>INDEPENDENT LAB</span><span>RR / 001</span></div>
-        <div class="orbit-art" aria-hidden="true">
-          <div class="orbit orbit-one"></div>
-          <div class="orbit orbit-two"></div>
-          <div class="orbit orbit-three"></div>
-          <div class="orbit-core"><img src="/assets/rr-icon-web.png" alt="" width="94" height="94"></div>
-          <span class="orbit-node node-one"></span><span class="orbit-node node-two"></span><span class="orbit-node node-three"></span>
-        </div>
-        <div class="side-caption"><span>OPEN SOURCE</span><span>BUILT TO LAST</span></div>
-      </div>
-      <div class="hero-footer"><span>SECURITY RESEARCH · SOFTWARE · SYSTEMS</span><span>SCROLL TO EXPLORE <span aria-hidden="true">↓</span></span></div>
-    </section>
-
-    <section class="status-section shell" id="status" aria-labelledby="status-title">
-      <div class="section-kicker"><span>01 / SİSTEM DURUMU</span><span>PRIMARY INFRASTRUCTURE</span></div>
+    <section class="status-section" id="status" aria-labelledby="status-title">
       <div class="status-panel" aria-live="polite">
         <div class="status-icon" aria-hidden="true"><span></span></div>
         <div class="status-content">
           <p class="status-label">ANA SUNUCU / DURUM RAPORU</p>
-          <h2 id="status-title">Ana sunucu çevrimdışı.</h2>
+          <h1 id="status-title">Ana sunucu çevrimdışı.</h1>
           <p id="status-message">Ana sunucu şu anda erişilemiyor. Bu yedek sayfa Cloudflare üzerinde bağımsız olarak yayınlanır.</p>
         </div>
         <div class="status-meta">
-          <span class="status-chip"><span class="status-dot" aria-hidden="true"></span><span id="status-chip-label">MAIN SERVER OFFLINE</span></span>
+          <span class="status-chip"><span class="status-dot" aria-hidden="true"></span><span id="status-chip-label">SERVER OFFLINE</span></span>
           <span class="meta-caption">CLOUDFLARE / STATIC FAILOVER</span>
         </div>
       </div>
-      <p class="status-note"><span aria-hidden="true">↳</span> Ana sunucudaki kesinti bu sayfanın yayınını etkilemez.</p>
     </section>
 
-    <section class="projects-section shell" id="projects" aria-labelledby="projects-title">
-      <div class="section-kicker"><span>02 / AÇIK KAYNAK</span><span>GITHUB REPOSITORIES</span></div>
+    <section class="temporary-note" aria-label="Geçici site bilgisi">
+      <span class="temporary-label"><span aria-hidden="true"></span> GEÇİCİ YEDEK SAYFA</span>
+      <p>Ana site tekrar devreye alınana kadar burada yalnızca sistem durumu ve proje bağlantıları bulunacak.</p>
+    </section>
+
+    <section class="projects-section" id="projects" aria-labelledby="projects-title">
       <div class="projects-heading">
-        <div><p class="tiny-label">ARAŞTIRMA · KOD · ÜRETİM</p><h2 id="projects-title">Projeler<span class="heading-period">.</span></h2></div>
-        <p class="projects-intro">GitHub profilindeki herkese açık, etkin depolar otomatik olarak listelenir. Yeni projeler yayınlandıkça bu alan kendini günceller.</p>
+        <div>
+          <p class="tiny-label">GITHUB / PUBLIC REPOSITORIES</p>
+          <h2 id="projects-title">Projeler<span>.</span></h2>
+        </div>
+        <a id="all-repos-link" class="all-repos-link" href="https://github.com/RedRiveRR?tab=repositories" target="_blank" rel="noopener noreferrer">Tüm projeler ↗</a>
       </div>
-      <div class="project-toolbar"><span id="project-count">REPOSITORIES / LOADING…</span><a id="all-repos-link" href="https://github.com/RedRiveRR?tab=repositories" target="_blank" rel="noopener noreferrer">Tüm depolar <span aria-hidden="true">↗</span></a></div>
-      <div id="project-grid" class="project-grid" aria-live="polite">
-        <article class="project-card project-loading"><div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line medium"></div><span>GitHub projeleri yükleniyor…</span></article>
-        <article class="project-card project-loading"><div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line medium"></div><span>Depolar kontrol ediliyor…</span></article>
-        <article class="project-card project-loading"><div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line medium"></div><span>Bağlantı kuruluyor…</span></article>
+      <div id="project-count" class="project-count">GitHub depoları yükleniyor…</div>
+      <div id="project-grid" class="project-list" aria-live="polite">
+        <p class="project-placeholder">Herkese açık projeler alınıyor…</p>
       </div>
-      <div class="projects-bottom"><span>PUBLIC REPOSITORIES ONLY</span><span>POWERED BY GITHUB API</span></div>
-    </section>
-
-    <section class="contact-section shell" id="contact">
-      <div class="contact-rule" aria-hidden="true"></div>
-      <div class="contact-copy"><p class="tiny-label">BİR SONRAKİ FİKİR?</p><h2>Açık kaynak.<br><span>Gerçek sistemler.</span></h2><p>Projeler, araçlar ve teknik geliştirmeler için GitHub üzerinden devam edebilirsin.</p><a id="contact-github" class="text-link" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GitHub profilini aç <span aria-hidden="true">↗</span></a></div>
-      <div class="contact-mark" aria-hidden="true"><img src="/assets/rr-icon-web.png" alt="" width="220" height="220"><span>RR / LAB</span></div>
+      <p class="projects-footnote">Yalnızca herkese açık depolar gösterilir.</p>
     </section>
   </main>
 
-  <footer class="site-footer shell">
-    <a class="footer-brand" href="#top"><img src="/assets/rr-icon-web.png" alt="" width="28" height="28"><span id="footer-brand-name">REDRIVERLAB</span></a>
-    <span>INDEPENDENT BY DESIGN.</span>
-    <span>© <span id="year"></span> <span id="footer-copy-name">REDRIVERLAB</span></span>
+  <footer class="site-footer">
+    <a class="footer-brand" href="#top"><img src="/assets/rr-icon-web.png" alt="" width="22" height="22"><span id="footer-brand-name">REDRIVERLAB</span></a>
+    <span class="footer-temporary">Geçici yayın · Ana sunucudan bağımsız</span>
+    <a class="footer-github" href="https://github.com/RedRiveRR" target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
   </footer>
 </body>
 </html>
