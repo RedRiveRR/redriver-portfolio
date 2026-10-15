@@ -72,7 +72,14 @@ export default {
     try {
       const fetchOptions = { signal: controller.signal };
       if (request.method === "GET" || request.method === "HEAD") {
-        fetchOptions.cf = { cacheTtl: 0, cacheEverything: false };
+        fetchOptions.cf = {
+          cacheTtl: 0,
+          cacheEverything: false,
+          // The apex DNS record currently points to Pages. Resolve the apex
+          // request against the proxied www A record to reach the actual server,
+          // while preserving https://redriverlab.me as the visitor/origin Host.
+          resolveOverride: "www.redriverlab.me"
+        };
       }
       const originResponse = await fetch(request, fetchOptions);
 
