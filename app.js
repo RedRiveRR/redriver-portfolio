@@ -161,11 +161,22 @@
     }).join("");
   }
 
+  // The list is shown from a same-origin snapshot (/repos.json) first, so it does not depend on
+  // GitHub's anonymous rate limit (60 requests/hour per IP, shared by everyone behind the same
+  // address). The live GitHub API then refreshes it; if that fails, the snapshot stays on screen.
   async function loadRepos() {
     if (!username) {
       showMessage("GitHub hesabı yapılandırılmamış.");
       return;
     }
+    let shown = false;
+    try {
+      const snapshot = await fetch("/repos.json", { cache: "no-cache" });
+      if (snapshot.ok) {
+        const repos = await snapshot.json();
+        if (Array.isArray(repos)) { renderRepos(repos); shown = true; }
+      }
+    } catch { /* the snapshot is optional */ }
     try {
       const response = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated&type=owner`, {
         headers: { "Accept": "application/vnd.github+json" }
@@ -175,8 +186,8 @@
       if (!Array.isArray(repos)) throw new Error("Beklenmeyen GitHub yanıtı");
       renderRepos(repos);
     } catch (error) {
-      console.warn("GitHub repositories could not be loaded:", error);
-      showMessage("Proje listesi şu an yüklenemedi; tüm herkese açık depoları GitHub profilinde görebilirsin.");
+      console.warn("GitHub repositories could not be refreshed:", error);
+      if (!shown) showMessage("Proje listesi şu an yüklenemedi; tüm herkese açık depoları GitHub profilinde görebilirsin.");
     }
   }
 
